@@ -6,3 +6,12 @@ body {
 a {
   color: #00B7FF;
 }
+
+img{
+	height: 450px;
+	margin: 15px;
+}
+
+.text{
+	display: block;
+}
