@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Here it is...</title>
+	<title>Movie App</title>
 
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-	<link rel="stylesheet" href="/stylesheets/style.css">
+	<% include head %>
 
 </head>
 <body>
 	<div class="container">
+		<% include navbar %>
+		<h1><%=message %></h1>
 		<!-- <div class="row"> -->
 			<div class="col-sm-12">
-				<form action="/search" method="post">
-					<input type="text" name="movieIdSearch" />
-					<button type="submit" class="btn btn-primary">Search Movies!</button>
-				</form>
 				<% for(let i = 0; i < parsedData.length; i++){ %>
 						<div class="col-sm-4">
 							<a href="#title<%=i%>"><img src="<%= imageBaseUrl + parsedData[i].poster_path %>"/></a>
