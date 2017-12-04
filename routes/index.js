@@ -3,6 +3,8 @@ var router = express.Router();
 var config = require('../config/config.js');
 var request = require('request');
 var mysql = require('mysql');
+var bcrypt = require('bcrypt-nodejs');
+
 var connection = mysql.createConnection(config.db);
 connection.connect((error)=>{
 	console.log(error);
@@ -32,31 +34,59 @@ router.post('/search', (req, res)=>{
 	var userSearch = req.body.movieIdSearch;
 	request.get(anyMovie + userSearch, (error, response, movieData)=>{
 		var parsedData = JSON.parse(movieData);
-		res.render('search', {
-			dataForPosters: parsedData.results,
-			imageBaseUrl: imageBaseUrl
+		res.render('index', {
+			parsedData: parsedData.results,
+			imageBaseUrl: imageBaseUrl,
+			message: ''
 		});
 	});
 	
 });
 
 router.get('/register', (req, res, next)=>{
-	res.render('register', {
+	res.render('register', {});
+});
 
+router.get('/login', (req, res, next)=>{
+	res.render('login', {});
+});
+
+router.post('/loginProcess', (req, res, next)=>{
+	var email = req.body.email;
+	var password = req.body.password;
+	// Check to see if the user is in the database:
+	var selectQuery = "SELECT * FROM users WHERE email = ?";
+	connection.query(selectQuery, [email], (error, results)=>{
+		if(results.length == 0){ // user not in DB
+			res.redirect('/login?msg=Not In System');
+		}else{ // email in DB, check if password matches
+			// compareSync takes 2 args and returns boolean:
+			// 1. the english password
+			// 2. the hashed password in the DB we want to check against
+			var doTheyMatch = bcrypt.compareSync(password, results[0].password);
+			if(doTheyMatch){
+				res.redirect('/?msg=Logged In');
+			}else{
+				res.redirect('/?msg=Passwords Do Not Match');
+			}
+		}
 	});
 });
+
 
 router.post('/registerProcess', (req, res, next)=>{
 	// res.json(req.body);
 	var name = req.body.name;
 	var email = req.body.email;
 	var password = req.body.password;
+	// convert the English password to a bcrypt hash
+	var hash = bcrypt.hashSync(password);
 
 	const selectQuery = "SELECT * FROM users WHERE email = ?;";
 	connection.query(selectQuery, [email], (error, results)=>{
 		if(results.length == 0){ // user is not in DB
 			var insertQuery = "INSERT INTO users (name, email, password) VALUES (?, ?, ?);";
-			connection.query(insertQuery, [name, email, password], (error, results)=>{
+			connection.query(insertQuery, [name, email, hash], (error, results)=>{
 				if(error){
 					throw error;
 				}else{

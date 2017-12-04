@@ -16,6 +16,12 @@
 							<a href="#title<%=i%>"><img src="<%= imageBaseUrl + dataForPosters[i].poster_path %>"/></a>
 						</div>
 				<% }; %>
+				<% for(let j = 0; j < dataForPosters.length; j++){ %>
+					<div id="title<%=j%>" class="row text">
+						<h2><%= dataForPosters[j].title %></h2>
+						<h4><%= dataForPosters[j].overview %></h4>
+					</div>
+				<% } %>
 			</div>
 		<!-- </div> -->
 	</div>
